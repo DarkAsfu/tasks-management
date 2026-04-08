@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { Calendar, History, RefreshCw } from 'lucide-react'
+import { Calendar, ChevronDown, ChevronUp, History, RefreshCw } from 'lucide-react'
 import Link from 'next/link'
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
@@ -28,11 +28,39 @@ const getActionBadgeClasses = (actionType = '') => {
   return 'text-purple-700 border-purple-200'
 }
 
+const getActionFilterKey = (actionType = '') => {
+  const type = actionType.toUpperCase()
+  if (type.includes('CREATE')) return 'create'
+  if (type.includes('UPDATE')) return 'update'
+  if (type.includes('DELETE')) return 'delete'
+  return 'other'
+}
+
+const isWithinRange = (dateValue, range) => {
+  if (range === 'all') return true
+  const created = new Date(dateValue).getTime()
+  const now = Date.now()
+  const oneDay = 24 * 60 * 60 * 1000
+  if (range === 'today') return now - created <= oneDay
+  if (range === '7d') return now - created <= oneDay * 7
+  if (range === '30d') return now - created <= oneDay * 30
+  return true
+}
+
+const getChangedFields = (beforeData, afterData) => {
+  if (!beforeData || !afterData) return []
+  const keys = Array.from(new Set([...Object.keys(beforeData), ...Object.keys(afterData)]))
+  return keys.filter((key) => JSON.stringify(beforeData[key]) !== JSON.stringify(afterData[key]))
+}
+
 export default function AuditLogs() {
   const [logs, setLogs] = useState([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [search, setSearch] = useState('')
+  const [actionFilter, setActionFilter] = useState('all')
+  const [dateFilter, setDateFilter] = useState('all')
+  const [expandedRows, setExpandedRows] = useState({})
 
   const fetchLogs = async (showLoader = true) => {
     try {
@@ -62,7 +90,6 @@ export default function AuditLogs() {
   }, [])
 
   const filteredLogs = useMemo(() => {
-    if (!search.trim()) return logs
     const keyword = search.trim().toLowerCase()
 
     return logs.filter((log) => {
@@ -70,15 +97,26 @@ export default function AuditLogs() {
       const actorEmail = log?.actor?.email?.toLowerCase() || ''
       const actionType = log?.actionType?.toLowerCase() || ''
       const targetId = log?.targetId?.toLowerCase() || ''
-
-      return (
+      const matchesSearch =
+        !keyword ||
         actorName.includes(keyword) ||
         actorEmail.includes(keyword) ||
         actionType.includes(keyword) ||
         targetId.includes(keyword)
-      )
+      const matchesAction =
+        actionFilter === 'all' || getActionFilterKey(log?.actionType) === actionFilter
+      const matchesDate = isWithinRange(log?.createdAt, dateFilter)
+
+      return matchesSearch && matchesAction && matchesDate
     })
-  }, [logs, search])
+  }, [logs, search, actionFilter, dateFilter])
+
+  const toggleExpanded = (id) => {
+    setExpandedRows((prev) => ({
+      ...prev,
+      [id]: !prev[id]
+    }))
+  }
 
   return (
     <div className='min-h-screen bg-gray-50'>
@@ -96,6 +134,27 @@ export default function AuditLogs() {
               placeholder='Search actor, action, target id'
               className='w-full md:w-[300px] h-[50px]'
             />
+            <select
+              value={actionFilter}
+              onChange={(e) => setActionFilter(e.target.value)}
+              className='w-full sm:w-[150px] h-[50px] px-3 border border-gray-200 rounded-md bg-white text-sm'
+            >
+              <option value='all'>All Actions</option>
+              <option value='create'>Create</option>
+              <option value='update'>Update</option>
+              <option value='delete'>Delete</option>
+              <option value='other'>Other</option>
+            </select>
+            <select
+              value={dateFilter}
+              onChange={(e) => setDateFilter(e.target.value)}
+              className='w-full sm:w-[140px] h-[50px] px-3 border border-gray-200 rounded-md bg-white text-sm'
+            >
+              <option value='all'>All Time</option>
+              <option value='today'>Today</option>
+              <option value='7d'>Last 7 Days</option>
+              <option value='30d'>Last 30 Days</option>
+            </select>
 
             <Button
               onClick={() => fetchLogs(false)}
@@ -149,18 +208,60 @@ export default function AuditLogs() {
                     </p>
                   </div>
 
+                  {getActionFilterKey(log?.actionType) === 'update' &&
+                    getChangedFields(log?.beforeData, log?.afterData).length > 0 && (
+                      <div className='mb-4 p-3 rounded-lg border border-orange-100 bg-orange-50/40'>
+                        <p className='text-xs font-semibold text-heading mb-2'>Changed Fields</p>
+                        <div className='flex flex-wrap gap-2'>
+                          {getChangedFields(log?.beforeData, log?.afterData).map((field) => (
+                            <Badge key={field} variant='outline' className='text-orange-700 border-orange-200'>
+                              {field}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                  <div className='mb-4'>
+                    <Button
+                      variant='outline'
+                      onClick={() => toggleExpanded(log.id)}
+                      className='h-9 text-xs'
+                    >
+                      {expandedRows[log.id] ? (
+                        <>
+                          <ChevronUp className='w-4 h-4 mr-2' />
+                          Hide Details
+                        </>
+                      ) : (
+                        <>
+                          <ChevronDown className='w-4 h-4 mr-2' />
+                          Show Details
+                        </>
+                      )}
+                    </Button>
+                  </div>
+
                   <div className='grid grid-cols-1 md:grid-cols-2 gap-3 mb-4'>
                     <div className='bg-gray-50 rounded-lg p-3 border border-gray-100'>
                       <p className='text-xs font-semibold text-heading mb-2'>Before Data</p>
-                      <pre className='text-[11px] text-subtext whitespace-pre-wrap break-all'>
-                        {log?.beforeData ? JSON.stringify(log.beforeData, null, 2) : 'N/A'}
-                      </pre>
+                      {expandedRows[log.id] ? (
+                        <pre className='text-xs leading-5 text-heading whitespace-pre-wrap break-all max-h-[260px] overflow-auto'>
+                          {log?.beforeData ? JSON.stringify(log.beforeData, null, 2) : 'N/A'}
+                        </pre>
+                      ) : (
+                        <p className='text-xs text-subtext'>Hidden - click "Show Details"</p>
+                      )}
                     </div>
                     <div className='bg-gray-50 rounded-lg p-3 border border-gray-100'>
                       <p className='text-xs font-semibold text-heading mb-2'>After Data</p>
-                      <pre className='text-[11px] text-subtext whitespace-pre-wrap break-all'>
-                        {log?.afterData ? JSON.stringify(log.afterData, null, 2) : 'N/A'}
-                      </pre>
+                      {expandedRows[log.id] ? (
+                        <pre className='text-xs leading-5 text-heading whitespace-pre-wrap break-all max-h-[260px] overflow-auto'>
+                          {log?.afterData ? JSON.stringify(log.afterData, null, 2) : 'N/A'}
+                        </pre>
+                      ) : (
+                        <p className='text-xs text-subtext'>Hidden - click "Show Details"</p>
+                      )}
                     </div>
                   </div>
 

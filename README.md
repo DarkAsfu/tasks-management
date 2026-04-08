@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Task Management Client
 
-## Getting Started
+Frontend for the task management system, built with Next.js.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Authentication and role-based access (Admin/User)
+- Task list, task details, add task, edit task
+- Status updates and task deletion
+- Admin-only audit logs page with:
+  - search
+  - action/date filters
+  - expandable details
+  - changed-field highlights for updates
+- Quick login credentials shown on the login page for local testing
+
+## Tech Stack
+
+- Next.js (App Router)
+- React
+- Tailwind CSS
+- shadcn/ui components
+- Axios
+
+## Prerequisites
+
+- Node.js 18+
+- npm
+- Running backend API (`task-management-server`)
+
+## Environment Variables
+
+Create a `.env.local` file in this folder:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:5000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+If not set, the app falls back to `http://localhost:5000`.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## Run Locally
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm install
+npm run dev
+```
 
-## Learn More
+Open [http://localhost:3000](http://localhost:3000).
 
-To learn more about Next.js, take a look at the following resources:
+## Demo Credentials (Seeded)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+These are displayed on the login page and can be auto-filled with the "Use" buttons:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Admin
+  - Email: `admin@test.com`
+  - Password: `admin123`
+- User
+  - Email: `user@test.com`
+  - Password: `user123`
 
-## Deploy on Vercel
+## Main Routes
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `/login` - login page
+- `/dashboard` - task list
+- `/add-task` - add task (admin)
+- `/edit-task/[task_id]` - edit task
+- `/task-details/[task_id]` - task details
+- `/audit-logs` - audit logs (admin)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Notes
+
+- Audit logs are served from backend endpoint `GET /audit-logs`.
+- Admin-only navigation links are conditionally rendered by role.

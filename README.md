@@ -47,6 +47,14 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+## Run with Docker (from project root)
+
+```bash
+docker compose up --build
+```
+
+Then open [http://localhost:3000](http://localhost:3000).
+
 ## Demo Credentials (Seeded)
 
 These are displayed on the login page and can be auto-filled with the "Use" buttons:
@@ -71,3 +79,4 @@ These are displayed on the login page and can be auto-filled with the "Use" butt
 
 - Audit logs are served from backend endpoint `GET /audit-logs`.
 - Admin-only navigation links are conditionally rendered by role.
+- In production mode, quick-login credentials are hidden on the login page.

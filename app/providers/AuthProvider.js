@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'react-hot-toast'
 
 const AuthContext = createContext()
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
@@ -30,7 +31,7 @@ export function AuthProvider({ children }) {
 
   const register = async (formData) => {
     try {
-      const res = await fetch('http://localhost:5000/auth/register', {
+      const res = await fetch(`${API_BASE_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -53,7 +54,7 @@ export function AuthProvider({ children }) {
 
   const login = async (formData) => {
     try {
-      const res = await fetch('http://localhost:5000/auth/login', {
+      const res = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

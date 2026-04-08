@@ -12,6 +12,7 @@ import { useAuth } from "@/app/providers/AuthProvider"
 
 export default function LoginPage() {
   const { login } = useAuth()
+  const showDemoCredentials = true
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -82,37 +83,39 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 space-y-3">
-            <p className="text-sm font-semibold text-heading">Quick Login Credentials</p>
-            <div className="flex items-center justify-between gap-3 rounded-md bg-white border border-gray-100 px-3 py-2">
-              <div className="text-sm">
-                <p className="font-medium text-heading">Admin</p>
-                <p className="text-subtext">admin@test.com / admin123</p>
+          {showDemoCredentials && (
+            <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 space-y-3">
+              <p className="text-sm font-semibold text-heading">Quick Login Credentials</p>
+              <div className="flex items-center justify-between gap-3 rounded-md bg-white border border-gray-100 px-3 py-2">
+                <div className="text-sm">
+                  <p className="font-medium text-heading">Admin</p>
+                  <p className="text-subtext">admin@test.com / admin123</p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-8 px-3"
+                  onClick={() => fillCredentials('admin@test.com', 'admin123')}
+                >
+                  Use
+                </Button>
               </div>
-              <Button
-                type="button"
-                variant="outline"
-                className="h-8 px-3"
-                onClick={() => fillCredentials('admin@test.com', 'admin123')}
-              >
-                Use
-              </Button>
-            </div>
-            <div className="flex items-center justify-between gap-3 rounded-md bg-white border border-gray-100 px-3 py-2">
-              <div className="text-sm">
-                <p className="font-medium text-heading">User</p>
-                <p className="text-subtext">user@test.com / user123</p>
+              <div className="flex items-center justify-between gap-3 rounded-md bg-white border border-gray-100 px-3 py-2">
+                <div className="text-sm">
+                  <p className="font-medium text-heading">User</p>
+                  <p className="text-subtext">user@test.com / user123</p>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-8 px-3"
+                  onClick={() => fillCredentials('user@test.com', 'user123')}
+                >
+                  Use
+                </Button>
               </div>
-              <Button
-                type="button"
-                variant="outline"
-                className="h-8 px-3"
-                onClick={() => fillCredentials('user@test.com', 'user123')}
-              >
-                Use
-              </Button>
             </div>
-          </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
@@ -160,12 +163,9 @@ export default function LoginPage() {
                   Remember me
                 </Label>
               </div>
-              <Link 
-                href="/reset-password" 
-                className="text-[16px] font-normal text-subtext hover:text-gray-800"
-              >
-                Forgot password?
-              </Link>
+              <span className="text-[16px] font-normal text-subtext">
+                Contact admin if you forgot password
+              </span>
             </div>
 
             <Button 
@@ -187,10 +187,7 @@ export default function LoginPage() {
 
             <div className="text-center">
               <span className="text-[16px] text-subtext">
-                Do not have an account?{" "}
-                <Link href="/signup" className="font-medium text-heading hover:text-heading/90">
-                  Sign Up
-                </Link>
+                Demo accounts are pre-created by seed data.
               </span>
             </div>
           </form>

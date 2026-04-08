@@ -351,15 +351,17 @@ export default function TaskDetails({ task_id }) {
             </div>
           </div>
           <div className="flex flex-col sm:flex-row gap-4 justify-end">
-            <Button
-              style={{ backgroundColor: "rgba(255, 76, 36, 0.15)" }}
-              className="w-full md:w-[270px] cursor-pointer h-[62px] capitalize text-[18px] font-semibold leading-[29.52px] text-[#FF4C24] py-4"
-              onClick={() => setShowDeleteModal(true)}
-              disabled={updating}
-              aria-label="Delete Task"
-            >
-              Delete Task
-            </Button>
+            {user?.role === "ADMIN" && (
+              <Button
+                style={{ backgroundColor: "rgba(255, 76, 36, 0.15)" }}
+                className="w-full md:w-[270px] cursor-pointer h-[62px] capitalize text-[18px] font-semibold leading-[29.52px] text-[#FF4C24] py-4"
+                onClick={() => setShowDeleteModal(true)}
+                disabled={updating}
+                aria-label="Delete Task"
+              >
+                Delete Task
+              </Button>
+            )}
             <Button
               className="w-full cursor-pointer md:w-[270px] h-[62px] capitalize bg-primary text-[18px] font-semibold leading-[29.52px] text-heading py-4"
               onClick={handleStatusChange}
@@ -392,65 +394,67 @@ export default function TaskDetails({ task_id }) {
       </Dialog>
 
       {/* Delete Confirmation Modal */}
-      <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
-        <DialogOverlay className="fixed inset-0 bg-black/50 z-[100]" />
-        <DialogContent className="fixed left-[50%] top-[50%] z-[101] w-full max-w-[425px] translate-x-[-50%] translate-y-[-50%] rounded-lg p-6 bg-white shadow-lg">
-          <div className="flex flex-col items-center text-center">
-            <Image src="/delete.png" width={350} height={250} alt="Delete confirmation" />
-            
-
-            <h3 className="text-[40px] font-poppins font-semibold text-heading mb-2">Are you Sure!!</h3>
-            <p className="text-[#737791] text-[18px] font-poppins mb-6">
-            Do you want to delete this Task on this app?
-            </p>
-
-            <div className="flex gap-5 w-[299px] h-[49px]">
+      {user?.role === "ADMIN" && (
+        <Dialog open={showDeleteModal} onOpenChange={setShowDeleteModal}>
+          <DialogOverlay className="fixed inset-0 bg-black/50 z-[100]" />
+          <DialogContent className="fixed left-[50%] top-[50%] z-[101] w-full max-w-[425px] translate-x-[-50%] translate-y-[-50%] rounded-lg p-6 bg-white shadow-lg">
+            <div className="flex flex-col items-center text-center">
+              <Image src="/delete.png" width={350} height={250} alt="Delete confirmation" />
               
-              <Button
-                onClick={handleDeleteTask}
-                disabled={updating}
-                className="flex-1 h-full cursor-pointer bg-primary hover:bg-primary/40 text-white"
-              >
-                {updating ? (
-                  <>
-                    <svg
-                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Deleting...
-                  </>
-                ) : (
-                  "Yes"
-                )}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setShowDeleteModal(false)}
-                className="flex-1 cursor-pointer h-full border-gray-300 hover:bg-gray-50"
-                disabled={updating}
-              >
-                No
-              </Button>
+
+              <h3 className="text-[40px] font-poppins font-semibold text-heading mb-2">Are you Sure!!</h3>
+              <p className="text-[#737791] text-[18px] font-poppins mb-6">
+              Do you want to delete this Task on this app?
+              </p>
+
+              <div className="flex gap-5 w-[299px] h-[49px]">
+                
+                <Button
+                  onClick={handleDeleteTask}
+                  disabled={updating}
+                  className="flex-1 h-full cursor-pointer bg-primary hover:bg-primary/40 text-white"
+                >
+                  {updating ? (
+                    <>
+                      <svg
+                        className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
+                      </svg>
+                      Deleting...
+                    </>
+                  ) : (
+                    "Yes"
+                  )}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setShowDeleteModal(false)}
+                  className="flex-1 cursor-pointer h-full border-gray-300 hover:bg-gray-50"
+                  disabled={updating}
+                >
+                  No
+                </Button>
+              </div>
             </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   )
 }

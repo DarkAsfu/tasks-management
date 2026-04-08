@@ -8,8 +8,8 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { List, RotateCcw, ChevronDown, Menu, Timer, History } from 'lucide-react'
+import { Sheet, SheetContent } from '@/components/ui/sheet'
+import { ChevronDown, Menu, Timer, History } from 'lucide-react'
 import { useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/app/providers/AuthProvider'
@@ -20,7 +20,6 @@ export default function Navbar () {
   const handleLogout = () =>{
     logout();
   }
-  console.log(user);
   return (
     <nav className='bg-transparent absolute w-full z-50'>
       <div className='max-w-[1320px] mx-auto py-3 px-2 2xl:px-0 flex items-center justify-between'>
@@ -35,7 +34,7 @@ export default function Navbar () {
         </Link>
         <div className='hidden md:flex items-center space-x-6'>
           <Link
-            href="/dashboard"
+            href="/"
             variant='ghost'
             className='text-white p-1 rounded-md hover:bg-teal-600/50 hover:text-white flex items-center space-x-2'
           >

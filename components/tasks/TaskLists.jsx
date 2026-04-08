@@ -201,7 +201,7 @@ export default function TaskLists() {
                 ? "You don't have any tasks yet. Create your first task to get started!"
                 : "No tasks match your filters"}
             </p>
-            <Link href='/dashboard/add-task'>
+            <Link href='/add-task'>
               <Button className='bg-primary cursor-pointer hover:bg-primary/90 text-heading'>
                 <Plus className='w-4 h-4 mr-2' />
                 Create New Task

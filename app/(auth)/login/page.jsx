@@ -5,28 +5,19 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { toast } from "react-hot-toast"
 import { useAuth } from "@/app/providers/AuthProvider"
 
 
 export default function LoginPage() {
-  const router = useRouter()
-  const { login, user } = useAuth()
+  const { login } = useAuth()
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     remember: false
   })
   const [loading, setLoading] = useState(false)
-
-  // Redirect if already logged in
-  // useEffect(() => {
-  //   if (user) {
-  //     router.push('/dashboard')
-  //   }
-  // }, [user])
 
   const handleChange = (e) => {
     const { id, value, type, checked } = e.target
@@ -55,6 +46,14 @@ export default function LoginPage() {
     }
   }
 
+  const fillCredentials = (email, password) => {
+    setFormData(prev => ({
+      ...prev,
+      email,
+      password
+    }))
+  }
+
   return (
     <div className="min-h-screen flex">
       <div className="hidden flex-1 bg-[#040612] md:flex items-center justify-center p-8 relative overflow-hidden">
@@ -78,9 +77,41 @@ export default function LoginPage() {
             <h1 className="text-[40px] font-semibold text-heading font-poppins leading-[52.8px] tracking-[-0.8px]">
               Login
             </h1>
-            <p className="text-[14px] text-[#667085] font-[500] leading-[26.24px] font-poppins">
+            <p className="text-[14px] text-subtext font-medium leading-[26.24px] font-poppins">
               Welcome Back, Please Enter your Details to Log In.
             </p>
+          </div>
+
+          <div className="rounded-lg border border-gray-200 bg-gray-50 p-4 space-y-3">
+            <p className="text-sm font-semibold text-heading">Quick Login Credentials</p>
+            <div className="flex items-center justify-between gap-3 rounded-md bg-white border border-gray-100 px-3 py-2">
+              <div className="text-sm">
+                <p className="font-medium text-heading">Admin</p>
+                <p className="text-subtext">admin@test.com / admin123</p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                className="h-8 px-3"
+                onClick={() => fillCredentials('admin@test.com', 'admin123')}
+              >
+                Use
+              </Button>
+            </div>
+            <div className="flex items-center justify-between gap-3 rounded-md bg-white border border-gray-100 px-3 py-2">
+              <div className="text-sm">
+                <p className="font-medium text-heading">User</p>
+                <p className="text-subtext">user@test.com / user123</p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                className="h-8 px-3"
+                onClick={() => fillCredentials('user@test.com', 'user123')}
+              >
+                Use
+              </Button>
+            </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -95,7 +126,7 @@ export default function LoginPage() {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#60E5AE] focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               />
             </div>
 
@@ -111,7 +142,7 @@ export default function LoginPage() {
                 onChange={handleChange}
                 required
                 minLength={6}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#60E5AE] focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               />
             </div>
 
@@ -125,13 +156,13 @@ export default function LoginPage() {
                     remember: checked
                   }))}
                 />
-                <Label htmlFor="remember" className="text-[16px] font-[400] text-subtext">
+                <Label htmlFor="remember" className="text-[16px] font-normal text-subtext">
                   Remember me
                 </Label>
               </div>
               <Link 
                 href="/reset-password" 
-                className="text-[16px] font-[400] text-subtext hover:text-gray-800"
+                className="text-[16px] font-normal text-subtext hover:text-gray-800"
               >
                 Forgot password?
               </Link>

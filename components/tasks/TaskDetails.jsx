@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog"
 import { ArrowLeft } from "lucide-react"
 import Image from "next/image"
+import { useAuth } from "@/app/providers/AuthProvider"
 
 // Constants
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
@@ -51,6 +52,7 @@ const formatStatusLabel = (status) => {
 
 export default function TaskDetails({ task_id }) {
   const router = useRouter()
+  const { user } = useAuth()
   const [task, setTask] = useState(null)
   const [loading, setLoading] = useState(true)
   const [selectedStatus, setSelectedStatus] = useState("")
@@ -127,7 +129,7 @@ export default function TaskDetails({ task_id }) {
         headers: getAuthHeaders(),
       })
       toast.success("Task deleted successfully")
-      router.push("/dashboard/")
+      router.push("/")
     } catch (error) {
       if (error.response?.status === 401) {
         toast.error("Please login to continue")
@@ -171,28 +173,30 @@ export default function TaskDetails({ task_id }) {
               <h3 className="font-poppins text-[16px] text-[#C716F3] font-semibold">
                 Assigned to: {task?.assignedUser?.name || "N/A"}
               </h3>
-              <Button
-                style={{ backgroundColor: "rgba(255, 171, 0, 0.10)" }}
-                className="w-full md:w-[167px] cursor-pointer h-[50px] text-[#FFAB00] text-[18px] font-semibold flex items-center justify-center gap-2"
-                onClick={() => router.push(`/dashboard/edit-task/${task_id}`)}
-                aria-label="Edit Task"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
-                  <path
-                    d="M24.5 25.6667H3.5C3.02167 25.6667 2.625 25.2701 2.625 24.7917C2.625 24.3134 3.02167 23.9167 3.5 23.9167H24.5C24.9783 23.9167 25.375 24.3134 25.375 24.7917C25.375 25.2701 24.9783 25.6667 24.5 25.6667Z"
-                    fill="#FFAB00"
-                  />
-                  <path
-                    d="M22.1916 4.06002C19.9283 1.79669 17.7116 1.73835 15.39 4.06002L13.9783 5.47169C13.8616 5.58835 13.815 5.77502 13.8616 5.93835C14.7483 9.03002 17.2216 11.5034 20.3133 12.39C20.36 12.4017 20.4066 12.4134 20.4533 12.4134C20.5816 12.4134 20.6983 12.3667 20.7916 12.2734L22.1916 10.8617C23.3466 9.71836 23.9066 8.61002 23.9066 7.49002C23.9183 6.33502 23.3583 5.21502 22.1916 4.06002Z"
-                    fill="#FFAB00"
-                  />
-                  <path
-                    d="M18.2137 13.4517C17.8753 13.2883 17.5487 13.125 17.2337 12.9383C16.977 12.7867 16.732 12.6233 16.487 12.4483C16.2887 12.32 16.0553 12.1333 15.8337 11.9467C15.8103 11.935 15.7287 11.865 15.6353 11.7717C15.2503 11.445 14.8187 11.025 14.4337 10.5583C14.3987 10.535 14.3403 10.4533 14.2587 10.3483C14.142 10.2083 13.9437 9.97502 13.7687 9.70668C13.6287 9.53168 13.4653 9.27502 13.3137 9.01835C13.127 8.70335 12.9637 8.38835 12.8003 8.06168C12.7568 7.96835 12.7157 7.87586 12.6767 7.78441C12.5336 7.44913 12.0982 7.35212 11.8405 7.60988L5.06533 14.385C4.91367 14.5367 4.77367 14.8283 4.73867 15.0267L4.10867 19.495C3.992 20.2883 4.21367 21.035 4.70367 21.5367C5.12367 21.945 5.707 22.1667 6.337 22.1667C6.477 22.1667 6.617 22.155 6.757 22.1317L11.237 21.5017C11.447 21.4667 11.7387 21.3267 11.8787 21.175L18.6466 14.407C18.9062 14.1475 18.808 13.7029 18.4695 13.5609C18.3859 13.5258 18.3009 13.4895 18.2137 13.4517Z"
-                    fill="#FFAB00"
-                  />
-                </svg>
-                Edit Task
-              </Button>
+              {user?.role === "ADMIN" && (
+                <Button
+                  style={{ backgroundColor: "rgba(255, 171, 0, 0.10)" }}
+                  className="w-full md:w-[167px] cursor-pointer h-[50px] text-[#FFAB00] text-[18px] font-semibold flex items-center justify-center gap-2"
+                  onClick={() => router.push(`/edit-task/${task_id}`)}
+                  aria-label="Edit Task"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
+                    <path
+                      d="M24.5 25.6667H3.5C3.02167 25.6667 2.625 25.2701 2.625 24.7917C2.625 24.3134 3.02167 23.9167 3.5 23.9167H24.5C24.9783 23.9167 25.375 24.3134 25.375 24.7917C25.375 25.2701 24.9783 25.6667 24.5 25.6667Z"
+                      fill="#FFAB00"
+                    />
+                    <path
+                      d="M22.1916 4.06002C19.9283 1.79669 17.7116 1.73835 15.39 4.06002L13.9783 5.47169C13.8616 5.58835 13.815 5.77502 13.8616 5.93835C14.7483 9.03002 17.2216 11.5034 20.3133 12.39C20.36 12.4017 20.4066 12.4134 20.4533 12.4134C20.5816 12.4134 20.6983 12.3667 20.7916 12.2734L22.1916 10.8617C23.3466 9.71836 23.9066 8.61002 23.9066 7.49002C23.9183 6.33502 23.3583 5.21502 22.1916 4.06002Z"
+                      fill="#FFAB00"
+                    />
+                    <path
+                      d="M18.2137 13.4517C17.8753 13.2883 17.5487 13.125 17.2337 12.9383C16.977 12.7867 16.732 12.6233 16.487 12.4483C16.2887 12.32 16.0553 12.1333 15.8337 11.9467C15.8103 11.935 15.7287 11.865 15.6353 11.7717C15.2503 11.445 14.8187 11.025 14.4337 10.5583C14.3987 10.535 14.3403 10.4533 14.2587 10.3483C14.142 10.2083 13.9437 9.97502 13.7687 9.70668C13.6287 9.53168 13.4653 9.27502 13.3137 9.01835C13.127 8.70335 12.9637 8.38835 12.8003 8.06168C12.7568 7.96835 12.7157 7.87586 12.6767 7.78441C12.5336 7.44913 12.0982 7.35212 11.8405 7.60988L5.06533 14.385C4.91367 14.5367 4.77367 14.8283 4.73867 15.0267L4.10867 19.495C3.992 20.2883 4.21367 21.035 4.70367 21.5367C5.12367 21.945 5.707 22.1667 6.337 22.1667C6.477 22.1667 6.617 22.155 6.757 22.1317L11.237 21.5017C11.447 21.4667 11.7387 21.3267 11.8787 21.175L18.6466 14.407C18.9062 14.1475 18.808 13.7029 18.4695 13.5609C18.3859 13.5258 18.3009 13.4895 18.2137 13.4517Z"
+                      fill="#FFAB00"
+                    />
+                  </svg>
+                  Edit Task
+                </Button>
+              )}
               <Button
                 className="w-full cursor-pointer md:w-[167px] h-[50px] bg-primary text-heading text-[16px] font-semibold"
                 onClick={() => router.back()}

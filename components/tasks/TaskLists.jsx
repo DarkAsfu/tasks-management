@@ -239,7 +239,7 @@ export default function TaskLists() {
                     </div>
 
                     <p className='text-[#667085] font-poppins text-[14px] mb-7 ml-[48px]'>
-                      {task.description}
+                      {task.description.slice(0, 100)}...
                     </p>
                     <p className='text-[#667085] font-poppins text-[13px] mb-4 ml-[48px]'>
                       Assigned to: {task.assignedUser?.name || 'Unassigned'}

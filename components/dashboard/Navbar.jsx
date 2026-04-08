@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { List, RotateCcw, ChevronDown, Menu, Timer } from 'lucide-react'
+import { List, RotateCcw, ChevronDown, Menu, Timer, History } from 'lucide-react'
 import { useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/app/providers/AuthProvider'
@@ -56,6 +56,16 @@ export default function Navbar () {
             </svg>
             <span className='text-primary text-[18px] capitalize'>Task List</span>
           </Link>
+          {user?.role === 'ADMIN' && (
+            <Link
+              href="/audit-logs"
+              variant='ghost'
+              className='text-white p-1 rounded-md hover:bg-teal-600/50 hover:text-white flex items-center space-x-2'
+            >
+              <History className='w-5 h-5 text-primary' />
+              <span className='text-primary text-[18px] capitalize'>Audit Logs</span>
+            </Link>
+          )}
         </div>
 
         {/* Right side - Desktop User Profile */}
@@ -134,6 +144,18 @@ export default function Navbar () {
               </svg>
               <span>Task List</span>
             </Button>
+
+            {user?.role === 'ADMIN' && (
+              <Link href='/audit-logs' onClick={() => setIsOpen(false)}>
+                <Button
+                  variant='ghost'
+                  className='justify-start flex items-center space-x-2 w-full'
+                >
+                  <History className='w-5 h-5' />
+                  <span>Audit Logs</span>
+                </Button>
+              </Link>
+            )}
 
             <Button
               variant='ghost'
